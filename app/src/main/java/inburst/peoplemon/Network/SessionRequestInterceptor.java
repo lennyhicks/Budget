@@ -6,8 +6,6 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static inburst.peoplemon.Components.Constants.HEADER_VALUE;
-
 /**
  * Created by lennyhicks on 10/31/16.
  */
@@ -17,9 +15,9 @@ public class SessionRequestInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
 
-        if (UserStore.getInstance().getToken() != null){
+       if (UserStore.getInstance().getToken() != null){
             Request.Builder builder = request.newBuilder();
-            builder.addHeader("Authorization", HEADER_VALUE);
+            builder.header("Authorization", UserStore.getInstance().getToken());
             request = builder.build();
 
         }

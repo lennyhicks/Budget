@@ -34,10 +34,10 @@ public interface ApiService {
 
     //User Calls
     @GET("v1/User/Nearby")
-    Call<User> findNearby(@Query("radiusInMeters") Integer radiusInMeters);
+    Call<User[]> findNearby(@Query("radiusInMeters") Integer radiusInMeters);
 
     @POST("/v1/User/CheckIn")// Lat, Long
-    Call<User> checkIn(@Body User user); //Body Longitude Latitude, ints
+    Call<Void> checkIn(@Body User user); //Body Longitude Latitude, ints
 
     @POST("/v1/User/Catch")//CaughtUserId, RadiusInMeters
     Call<User> catchUser(@Body User user ); //Body CaughtUserId - string, CaughtUserId - int

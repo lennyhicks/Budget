@@ -17,9 +17,10 @@ import flow.Flow;
 import flow.History;
 import inburst.budget.R;
 import inburst.peoplemon.Models.Auth;
-import inburst.peoplemon.Models.User;
 import inburst.peoplemon.Network.RestClient;
+import inburst.peoplemon.Network.UserStore;
 import inburst.peoplemon.PeopleMon;
+import inburst.peoplemon.Stages.MapStage;
 import inburst.peoplemon.Stages.RegisterStage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,8 +28,6 @@ import retrofit2.Response;
 
 import static inburst.peoplemon.Components.Constants.GRANT_TYPE;
 import static inburst.peoplemon.Components.Constants.HEADER_VALUE;
-import static inburst.peoplemon.Components.Constants.radiusInMeters;
-import static inburst.peoplemon.PeopleMon.API_BASE_URL;
 
 /**
  * Created by lennyhicks on 10/31/16.
@@ -106,20 +105,14 @@ public class LoginView extends LinearLayout {
                         Log.i("RESPONSE", response.message());
                         Auth auth = response.body();
                         HEADER_VALUE = "Bearer "+auth.getAccessToken();
-                        Log.i("AUTHTOKEN ",  HEADER_VALUE + " Test");
-                        getToken();
-//                        User authUser = response.body();
-//                        UserStore.getInstance().setToken(authUser.getToken());
-//                        UserStore.getInstance().setTokenExpiration(authUser.getExpiration());
+                        UserStore.getInstance().setToken(HEADER_VALUE);
 
-  //                      Flow flow = PeopleMon.getMainFlow();
-                      //  resetView();
-//                        userNameField.setText("");
-//                        passwordField.setText("");
-//                        confirmPassword.setText("");
-//                        emailField.setText("");
-//                        avatar.setText("");
-   //                     flow.goBack();
+                        Log.i("AUTHTOKEN ",  HEADER_VALUE + " Test");
+
+                        Flow flow = PeopleMon.getMainFlow();
+                        //flow.goBack();
+                        History newHistory = History.single(new MapStage());
+                        flow.setHistory(newHistory, Flow.Direction.REPLACE);
                     } else {
                         Toast.makeText(context, "Failed Registering" + " : " + response.code(), Toast.LENGTH_LONG).show();
                         //resetView();
@@ -138,20 +131,4 @@ public class LoginView extends LinearLayout {
         }
     }
 
-    public void getToken(){
-        API_BASE_URL = "https://efa-peoplemon-api.azurewebsites.net/";
-        final RestClient restClient = new RestClient();
-        restClient.getApiService().findNearby(radiusInMeters).enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                Log.i("RESPONSE", response.message());
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Toast.makeText(context, "Getting Users?" , Toast.LENGTH_LONG).show();
-
-            }
-        });
-    }
 }

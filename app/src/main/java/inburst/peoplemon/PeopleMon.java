@@ -19,8 +19,8 @@ public class PeopleMon extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
-    }
 
+    }
 
     public static PeopleMon getInstance() {
         return application;

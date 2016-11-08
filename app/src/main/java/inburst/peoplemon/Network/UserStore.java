@@ -18,14 +18,14 @@ public class UserStore {
         return ourInstance;
     }
 
-    private SharedPreferences sharedPrefs = PeopleMon.getInstance().getSharedPreferences("PeoplemonGoPrefs", Context.MODE_PRIVATE);
+    private static SharedPreferences sharedPrefs = PeopleMon.getInstance().getSharedPreferences("PeoplemonGoPrefs", Context.MODE_PRIVATE);
 
     public String getToken(){
         String theToken = sharedPrefs.getString(Constants.token, null);
         return theToken;
     }
 
-    public void setToken(String token){
+    public static void setToken(String token){
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(Constants.token, token);
         editor.apply();

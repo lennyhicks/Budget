@@ -3,6 +3,7 @@ package inburst.peoplemon.Stages;
 import android.app.Application;
 
 import inburst.budget.R;
+import inburst.peoplemon.PeopleMon;
 import inburst.peoplemon.Riggers.SlideRigger;
 
 /**
@@ -18,7 +19,7 @@ public class PeopleMonStage extends IndexedStage {
     }
 
     public PeopleMonStage(){
-        this(inburst.peoplemon.PeopleMon.getInstance());
+        this(PeopleMon.getInstance());
     }
 
     @Override

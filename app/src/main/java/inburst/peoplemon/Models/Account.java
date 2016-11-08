@@ -22,9 +22,9 @@ public class Account {
     @SerializedName("AvatarBase64")
     private String avatarBase64;
     @SerializedName("LastCheckInLongitude")
-    private Float lastLng;
+    private Double lastLng;
     @SerializedName("LastCheckInLatitude")
-    private Float lastLat;
+    private Double lastLat;
     @SerializedName("LastCheckInDateTime")
     private String lastCheckIn;
     @SerializedName("Password")
@@ -35,7 +35,7 @@ public class Account {
     private String grantType;
 
 
-    public Account(String id, String email, Boolean hasRegistered, String loginProvided, String fullName, String avatarBase64, Float lastLng, Float lastLat, String lastCheckIn) {
+    public Account(String id, String email, Boolean hasRegistered, String loginProvided, String fullName, String avatarBase64, Double lastLng, Double lastLat, String lastCheckIn) {
         this.id = id;
         this.email = email;
         this.hasRegistered = hasRegistered;
@@ -47,7 +47,7 @@ public class Account {
         this.lastCheckIn = lastCheckIn;
     }
 
-    public Account(Float lastLng, Float lastLat) {
+    public Account(Double lastLng, Double lastLat) {
         this.lastLng = lastLng;
         this.lastLat = lastLat;
     }
