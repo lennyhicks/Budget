@@ -1,16 +1,21 @@
 package inburst.peoplemon.Views;
 
+import android.animation.IntEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.util.Log;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -22,19 +27,27 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import flow.Flow;
+import flow.History;
 import inburst.budget.R;
+import inburst.peoplemon.Components.Utils;
 import inburst.peoplemon.MainActivity;
 import inburst.peoplemon.Models.User;
 import inburst.peoplemon.Network.RestClient;
+import inburst.peoplemon.PeopleMon;
+import inburst.peoplemon.Stages.CaughtStage;
+import inburst.peoplemon.Stages.NearbyStage;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +60,7 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
 
     private GoogleApiClient googleApiClient;
     private GoogleMap mMap;
-    private Location mLastLocation;
+    public static Location mLastLocation;
     private LocationManager locationManager;
     private Context context;
     private Marker marker;
@@ -58,9 +71,13 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
 
     @Bind(R.id.mapView)
     MapView mapView;
-//
-//    @Bind(R.id.checkIn)
-//    FloatingActionButton checkIn;
+
+    @Bind(R.id.checkIn)
+    FloatingActionButton checkIn;
+
+    @Bind(R.id.caughtUsers)
+    FloatingActionButton caughtUsers;
+
 
 
     public MapsView(Context context, AttributeSet attrs) {
@@ -82,6 +99,7 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
         restClient = new RestClient();
 
 
+
     }
 
 
@@ -91,7 +109,7 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
         UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
-        mMap.setOnMyLocationChangeListener(myLocationChangeListener);
+        //mMap.setOnMyLocationChangeListener(myLocationChangeListener);
         mMap.setOnMarkerClickListener(markerClick);
 
 
@@ -126,7 +144,7 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        return false;
+        return true;
     }
 
     @Override
@@ -134,7 +152,6 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
         Location location = new Location("");
         Toast.makeText(context, location.getLatitude() + "", Toast.LENGTH_SHORT).show();
         LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(current).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(current));
         return true;
     }
@@ -142,23 +159,32 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
 
     private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
         @Override
-        public void onMyLocationChange(Location location) {
-            mMap.clear();
-            mLastLocation = location;
+        public void onMyLocationChange(final Location location) {
+            checkIn(location);
+            circleMaker(location, ValueAnimator.INFINITE);
+
             restClient.getApiService().findNearby(RADIUS_IN_METERS).enqueue(new Callback<User[]>() {
                 @Override
                 public void onResponse(Call<User[]> call, Response<User[]> response) {
-                    Log.i("USERS", Arrays.asList(response.body()).toString());
-                    User[] userArray = response.body();
-                    for (User user : userArray) {
-                        String[] haxor = user.getAvatarBase64().split(",");
-                        byte[] decodedString = Base64.decode(haxor[1], Base64.DEFAULT);
+                    User[] userList = response.body();
+                    if (userList != null) {
+                        mMap.clear();
+                        Log.i("FOUND ", userList.length +" People");
+                        for (User user : userList) {
+                            Location locat = new Location("");
+                            locat.setLatitude(user.getLatitude());
+                            locat.setLongitude(user.getLongitude());
+                            user.setRadiusInMeters(location.distanceTo(locat));
+                          if (location.distanceTo(locat) <= RADIUS_IN_METERS) {
+                                Bitmap image = Utils.decodeImage(user.getAvatarBase64());
+                                if (image != null) {
+                                    mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(image)).position(new LatLng(user.getLatitude(), user.getLongitude())).title(user.getUserId()).snippet(user.getUserName()));
+                                } else {
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(user.getLatitude(), user.getLongitude())).title(user.getUserId()).snippet(user.getUserName()));
 
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                        decodedByte = Bitmap.createScaledBitmap(decodedByte, 120, 120, false);
-
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(user.getLatitude(), user.getLongitude())).icon(BitmapDescriptorFactory.fromBitmap(decodedByte)).title(user.getUserName()));
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -167,43 +193,118 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
 
                 }
             });
-            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-            marker = mMap.addMarker(new MarkerOptions().position(loc));
-            visibleMarkers.add(0, marker);
-            for (Marker marker : visibleMarkers) {
-                //mMap.addMarker(new MarkerOptions(marker));
-            }
-            if (mMap != null) {
-                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16.0f));
-            }
         }
     };
-//
-//    @OnClick(R.id.checkIn)
-//    public void checkIn(){
-//        User user = new User(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-//        restClient.getApiService().checkIn(user).enqueue(new Callback<Void>() {
-//            @Override
-//            public void onResponse(Call<Void> call, Response<Void> response) {
-//                Toast.makeText(context, "Checked in", Toast.LENGTH_SHORT).show();
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Void> call, Throwable t) {
-//
-//            }
-//        });
-//
-//    }
+
+    @OnClick(R.id.checkIn)
+    public void nearbyList(){
+        Flow flow = PeopleMon.getMainFlow();
+        History newHistory = flow.getHistory().buildUpon()
+                .push(new NearbyStage())
+                .build();
+        flow.setHistory(newHistory, Flow.Direction.FORWARD);
+
+    }
+
+    @OnClick(R.id.caughtUsers)
+    public void caughtTapped() {
+        Flow flow = PeopleMon.getMainFlow();
+        History newHistory = flow.getHistory().buildUpon()
+                .push(new CaughtStage())
+                .build();
+        flow.setHistory(newHistory, Flow.Direction.FORWARD);
+    }
 
     GoogleMap.OnMarkerClickListener markerClick = new GoogleMap.OnMarkerClickListener() {
         @Override
-        public boolean onMarkerClick(Marker marker) {
-            Toast.makeText(context, "Marker Clicked", Toast.LENGTH_SHORT).show();
-            marker.showInfoWindow();
+        public boolean onMarkerClick(final Marker marker) {
+
+            final String userId = marker.getTitle();
+            final Location userLoc = new Location("");
+            userLoc.setLatitude(marker.getPosition().latitude);
+            userLoc.setLongitude(marker.getPosition().longitude);
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            User user = new User(userId, mLastLocation.distanceTo(userLoc));
+                            restClient.getApiService().catchUser(user).enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    if (response.isSuccessful()) {
+                                        Toast.makeText(getContext(), "Successfully Caught " + marker.getSnippet(), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getContext(), "Something went Wrong", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Toast.makeText(getContext(), "Something went Wrong", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            };
+            Location location = new Location("");
+            location.setLatitude(marker.getPosition().latitude);
+            location.setLongitude(marker.getPosition().longitude);
+            circleMaker(location, 2);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage("Catch " + marker.getSnippet()).setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+
             return true;
         }
     };
 
+
+
+    public void checkIn(Location location){
+        mLastLocation = location;
+        User user = new User(location.getLatitude(), location.getLongitude());
+       // mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
+
+        restClient.getApiService().checkIn(user).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+              //  Toast.makeText(context, "Checked in", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+
+    public void circleMaker(Location location, Integer repeat) {
+        final Circle circle = mMap.addCircle(new CircleOptions().center(new LatLng(location.getLatitude(), location.getLongitude()))
+                .fillColor(Color.argb(50, 0, 0, 255)).radius(RADIUS_IN_METERS));
+
+        ValueAnimator vAnimator = new ValueAnimator();
+        vAnimator.setRepeatCount(repeat);
+        vAnimator.setRepeatMode(ValueAnimator.RESTART);  /* PULSE */
+        vAnimator.setIntValues(0, 100);
+        vAnimator.setDuration(2500);
+        vAnimator.setEvaluator(new IntEvaluator());
+        vAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        vAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float animatedFraction = valueAnimator.getAnimatedFraction();
+                //Log.e("", "" + animatedFraction);
+                circle.setRadius(animatedFraction * RADIUS_IN_METERS);
+            }
+        });
+        vAnimator.start();
+    }
 }

@@ -23,10 +23,10 @@ public interface ApiService {
     Call<Account> getUserInfo();
 
     @POST("/api/Account/UserInfo") //Fullname, Avatar
-    Call<Account> updateInfo(@Body Account account);
+    Call<Void> updateInfo(@Body Account account);
 
     @POST("/api/Account/Logout")
-    Call<Account> logout();
+    Call<Void> logout();
 
     @POST("/api/Account/Register")//Email, FullName, Avatar, APIkey, Password;
     Call<Void> register(@Body Account account);
@@ -40,7 +40,7 @@ public interface ApiService {
     Call<Void> checkIn(@Body User user); //Body Longitude Latitude, ints
 
     @POST("/v1/User/Catch")//CaughtUserId, RadiusInMeters
-    Call<User> catchUser(@Body User user ); //Body CaughtUserId - string, CaughtUserId - int
+    Call<Void> catchUser(@Body User user ); //Body CaughtUserId - string, CaughtUserId - int
 
     @GET("/v1/User/Caught")
     Call<User[]> caughtUsers();

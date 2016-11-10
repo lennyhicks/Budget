@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                      xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:background="@android:color/white"
+                android:layout_centerInParent="true"
+                android:id="@+id/editProfile"
+
+
+        >
+
+
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:hint="Full Name"
+            android:id="@+id/nameField"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:textAlignment="center"/>
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:id="@+id/editButton"
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@+id/imageView"
+            android:layout_alignParentEnd="true"/>
+
+    <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:hint="Select Your Avatar"
+            android:id="@+id/avatar"
+            android:layout_gravity="center_horizontal"
+            android:focusable="false"
+            android:textAlignment="center"
+            android:layout_below="@+id/nameField"
+            android:layout_alignParentStart="true"/>
+
+    <ImageView
+        android:layout_width="120dp"
+        app:srcCompat="@drawable/pokeball"
+        android:id="@+id/imageView"
+        android:scaleType="fitXY"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/avatar"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:text="Button"
+        android:layout_height="wrap_content"
+        android:id="@+id/cancel"
+
+        android:layout_width="150dp"
+        android:layout_alignBaseline="@+id/editButton"
+        android:layout_alignBottom="@+id/editButton"
+        android:layout_alignParentStart="true"/>
+</RelativeLayout>
+

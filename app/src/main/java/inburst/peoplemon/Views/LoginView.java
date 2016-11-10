@@ -27,7 +27,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static inburst.peoplemon.Components.Constants.GRANT_TYPE;
-import static inburst.peoplemon.Components.Constants.HEADER_VALUE;
 
 /**
  * Created by lennyhicks on 10/31/16.
@@ -104,10 +103,7 @@ public class LoginView extends LinearLayout {
                     if (response.isSuccessful()){
                         Log.i("RESPONSE", response.message());
                         Auth auth = response.body();
-                        HEADER_VALUE = "Bearer "+auth.getAccessToken();
-                        UserStore.getInstance().setToken(HEADER_VALUE);
-
-                        Log.i("AUTHTOKEN ",  HEADER_VALUE + " Test");
+                        UserStore.getInstance().setToken("Bearer "+auth.getAccessToken());
 
                         Flow flow = PeopleMon.getMainFlow();
                         //flow.goBack();
@@ -115,9 +111,6 @@ public class LoginView extends LinearLayout {
                         flow.setHistory(newHistory, Flow.Direction.REPLACE);
                     } else {
                         Toast.makeText(context, "Failed Registering" + " : " + response.code(), Toast.LENGTH_LONG).show();
-                        //resetView();
-
-
                     }
                 }
 

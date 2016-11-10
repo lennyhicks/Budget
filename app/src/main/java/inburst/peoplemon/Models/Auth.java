@@ -1,7 +1,5 @@
 package inburst.peoplemon.Models;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 
 import static inburst.peoplemon.Components.Constants.HEADER_VALUE;
@@ -32,7 +30,6 @@ public class Auth {
         this.userName = userName;
         this.issued = issued;
         this.expires = expires;
-        Log.i("HEADER_VALUE", HEADER_VALUE);
     }
 
     public Auth() {

@@ -1,12 +1,14 @@
 package inburst.peoplemon.Views;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -16,6 +18,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import flow.Flow;
 import inburst.budget.R;
+import inburst.peoplemon.Components.Constants;
+import inburst.peoplemon.Components.Utils;
+import inburst.peoplemon.MainActivity;
 import inburst.peoplemon.Models.Account;
 import inburst.peoplemon.Network.RestClient;
 import inburst.peoplemon.PeopleMon;
@@ -51,6 +56,9 @@ public class RegisterView extends LinearLayout {
     @Bind(R.id.spinner)
     ProgressBar spinner;
 
+    @Bind(R.id.imageView)
+    ImageView imageView;
+
     public RegisterView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
@@ -64,9 +72,9 @@ public class RegisterView extends LinearLayout {
     }
 
     @OnClick(R.id.registerButton)
-    public void register(){
-
-        InputMethodManager inm = (InputMethodManager)context
+    public void register() {
+        //avatar.setHint("Select Avatar");
+        InputMethodManager inm = (InputMethodManager) context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         inm.hideSoftInputFromInputMethod(userNameField.getWindowToken(), 0);
         inm.hideSoftInputFromInputMethod(passwordField.getWindowToken(), 0);
@@ -79,7 +87,7 @@ public class RegisterView extends LinearLayout {
         String email = emailField.getText().toString();
         String avatarString = avatar.getText().toString();
 
-        if(username.isEmpty() || password.isEmpty() || email.isEmpty() || conPassword.isEmpty() || avatarString.isEmpty()){
+        if (username.isEmpty() || password.isEmpty() || email.isEmpty() || conPassword.isEmpty()) {
             Toast.makeText(context, "Please Complete all fields", Toast.LENGTH_LONG).show();
         } else if (!password.equals(conPassword)) {
             Toast.makeText(context, "Please Make sure both password fields are matching", Toast.LENGTH_LONG).show();
@@ -88,8 +96,12 @@ public class RegisterView extends LinearLayout {
         } else {
             registerButton.setEnabled(false);
             spinner.setVisibility(VISIBLE);
+            imageView.buildDrawingCache();
+            Bitmap bmap = imageView.getDrawingCache();
+            avatarString = Utils.encodeTobase64(bmap);
+            Log.i("STRING", Constants.IMAGE);
 
-            Account account = new Account(email, username, avatarString, password);
+            Account account = new Account(email, username, Constants.IMAGE, password);
             RestClient restClient = new RestClient();
             restClient.getApiService().register(account).enqueue(new Callback<Void>() {
 
@@ -97,7 +109,7 @@ public class RegisterView extends LinearLayout {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
 
-                    if (response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         Log.i("RESPONSE", response.message());
 //                        User authUser = response.body();
 //                        UserStore.getInstance().setToken(authUser.getToken());
@@ -128,8 +140,12 @@ public class RegisterView extends LinearLayout {
     }
 
 
+    @OnClick(R.id.avatar)
+    public void pickAvatar() {
 
+        ((MainActivity)context).getImage();
 
+}
 
     private void resetView() {
         registerButton.setEnabled(true);

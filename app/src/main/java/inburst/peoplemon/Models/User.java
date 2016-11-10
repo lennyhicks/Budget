@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by lennyhicks on 11/6/16.
  */
 
-public class User {
+public class User implements Comparable<User> {
 
 
     @SerializedName("UserId")
@@ -20,7 +20,7 @@ public class User {
     @SerializedName("CaughtUserId")
     private String caughtUserId;
     @SerializedName("RadiusInMeters")
-    private Integer radiusInMeters;
+    private Float radiusInMeters;
     @SerializedName("Longitude")
     private Double longitude;
     @SerializedName("Latitude")
@@ -35,12 +35,17 @@ public class User {
         this.latitude = latitude;
     }
 
-    public User() {
+    public User(String userId) {
     }
 
-    public User(Double longitude, Double latitude) {
-        this.longitude = longitude;
+    public User(Double latitude, Double longitude) {
         this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public User(String caughtUserId, Float radiusInMeters) {
+        this.caughtUserId = caughtUserId;
+        this.radiusInMeters = radiusInMeters;
     }
 
     public String getUserId() {
@@ -83,11 +88,11 @@ public class User {
         this.caughtUserId = caughtUserId;
     }
 
-    public Integer getRadiusInMeters() {
+    public Float getRadiusInMeters() {
         return radiusInMeters;
     }
 
-    public void setRadiusInMeters(Integer radiusInMeters) {
+    public void setRadiusInMeters(Float radiusInMeters) {
         this.radiusInMeters = radiusInMeters;
     }
 
@@ -105,5 +110,11 @@ public class User {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    @Override
+    public int compareTo(User user) {
+
+        return getRadiusInMeters().compareTo(user.getRadiusInMeters());
     }
 }
