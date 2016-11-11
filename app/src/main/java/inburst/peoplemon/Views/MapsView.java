@@ -245,13 +245,13 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
                                     if (response.isSuccessful()) {
                                         Toast.makeText(getContext(), "Successfully Caught " + marker.getSnippet(), Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(getContext(), "Something went Wrong", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), "You are to far Away", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<Void> call, Throwable t) {
-                                    Toast.makeText(getContext(), "Something went Wrong", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "You are to far Away", Toast.LENGTH_SHORT).show();
                                 }
                             });
                             break;

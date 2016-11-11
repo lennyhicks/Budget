@@ -18,7 +18,6 @@ import java.util.Collections;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import inburst.budget.R;
-import inburst.peoplemon.Components.Constants;
 import inburst.peoplemon.Components.Utils;
 import inburst.peoplemon.Models.User;
 
@@ -43,7 +42,7 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.Users> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, caught.getUserName() + " Caught", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, caught.getUserName() + " Tapped. Radar Shown", Toast.LENGTH_SHORT).show();
                 Location loc = new Location("");
                 loc.setLatitude(caught.getLatitude());
                 loc.setLongitude(caught.getLongitude());
@@ -83,11 +82,13 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.Users> {
         public void bindCategory(User user) {
             DecimalFormat df = new DecimalFormat("0.00");
             nameField.setText(user.getUserName());
-            Bitmap image = Utils.decodeImage(Constants.IMAGE);
-            if (image == null) {
-                imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_launcher));
-            } else {
+            Bitmap image = Utils.decodeImage(user.getAvatarBase64());
+            try {
+
                 imageView.setImageBitmap(image);
+            } catch (Exception e){
+                imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_launcher));
+
             }
 
             Collections.sort(users);
