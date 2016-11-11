@@ -1,20 +1,31 @@
 package inburst.peoplemon.Components;
 
+import android.animation.IntEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.util.Base64;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
 import inburst.budget.R;
+
+import static inburst.peoplemon.Components.Constants.RADIUS_IN_METERS;
+import static inburst.peoplemon.Views.MapsView.mMap;
 
 /**
  * Created by lennyhicks on 11/8/16.
@@ -72,5 +83,27 @@ public class Utils {
         Drawable myDrawable = context.getResources().getDrawable(resID);
         Bitmap myLogo = ((BitmapDrawable) myDrawable).getBitmap();
         return myLogo;
+    }
+
+    public static void circleMaker(Location location, Integer repeat) {
+        final Circle circle = mMap.addCircle(new CircleOptions().center(new LatLng(location.getLatitude(), location.getLongitude()))
+                .fillColor(Color.argb(50, 0, 0, 255)).radius(RADIUS_IN_METERS));
+
+        ValueAnimator vAnimator = new ValueAnimator();
+        vAnimator.setRepeatCount(repeat);
+        vAnimator.setRepeatMode(ValueAnimator.RESTART);  /* PULSE */
+        vAnimator.setIntValues(0, 100);
+        vAnimator.setDuration(2500);
+        vAnimator.setEvaluator(new IntEvaluator());
+        vAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        vAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float animatedFraction = valueAnimator.getAnimatedFraction();
+                //Log.e("", "" + animatedFraction);
+                circle.setRadius(animatedFraction * RADIUS_IN_METERS);
+            }
+        });
+        vAnimator.start();
     }
 }

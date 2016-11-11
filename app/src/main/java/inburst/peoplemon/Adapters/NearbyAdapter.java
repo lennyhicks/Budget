@@ -2,6 +2,7 @@ package inburst.peoplemon.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,11 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.Users> {
             @Override
             public void onClick(View view) {
                 Toast.makeText(context, caught.getUserName() + " Caught", Toast.LENGTH_SHORT).show();
+                Location loc = new Location("");
+                loc.setLatitude(caught.getLatitude());
+                loc.setLongitude(caught.getLongitude());
+
+                Utils.circleMaker(loc, 2);
 
             }
         });

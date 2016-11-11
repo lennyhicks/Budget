@@ -1,11 +1,9 @@
 package inburst.peoplemon.Views;
 
-import android.animation.IntEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -15,7 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -27,8 +24,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -54,13 +49,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static inburst.peoplemon.Components.Constants.RADIUS_IN_METERS;
+import static inburst.peoplemon.Components.Utils.circleMaker;
 
 public class MapsView extends RelativeLayout implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnMarkerClickListener, GoogleMap.OnMyLocationButtonClickListener {
 
     private GoogleApiClient googleApiClient;
-    private GoogleMap mMap;
+    public static GoogleMap mMap;
     public static Location mLastLocation;
     private LocationManager locationManager;
     private Context context;
@@ -299,25 +295,5 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
     }
 
 
-    public void circleMaker(Location location, Integer repeat) {
-        final Circle circle = mMap.addCircle(new CircleOptions().center(new LatLng(location.getLatitude(), location.getLongitude()))
-                .fillColor(Color.argb(50, 0, 0, 255)).radius(RADIUS_IN_METERS));
 
-        ValueAnimator vAnimator = new ValueAnimator();
-        vAnimator.setRepeatCount(repeat);
-        vAnimator.setRepeatMode(ValueAnimator.RESTART);  /* PULSE */
-        vAnimator.setIntValues(0, 100);
-        vAnimator.setDuration(2500);
-        vAnimator.setEvaluator(new IntEvaluator());
-        vAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        vAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                float animatedFraction = valueAnimator.getAnimatedFraction();
-                //Log.e("", "" + animatedFraction);
-                circle.setRadius(animatedFraction * RADIUS_IN_METERS);
-            }
-        });
-        vAnimator.start();
-    }
 }
