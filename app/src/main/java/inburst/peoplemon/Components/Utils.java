@@ -1,10 +1,20 @@
 package inburst.peoplemon.Components;
 
+import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
 import java.io.ByteArrayOutputStream;
+import java.util.Random;
+
+import inburst.budget.R;
 
 /**
  * Created by lennyhicks on 11/8/16.
@@ -47,5 +57,16 @@ public class Utils {
     public static Bitmap resize(Bitmap image) {
         image = Bitmap.createScaledBitmap(image, 120, 120, false);
         return image;
+    }
+
+    public static Bitmap getRandomPokemon(Context context){
+        final TypedArray imgs = context.getResources().obtainTypedArray(R.array.randPoke);
+        final Random rand = new Random();
+        final int rndInt = rand.nextInt(imgs.length());
+        final int resID = imgs.getResourceId(rndInt, 0);
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(resID);
+        Drawable myDrawable = context.getResources().getDrawable(resID);
+        Bitmap myLogo = ((BitmapDrawable) myDrawable).getBitmap();
+        return myLogo;
     }
 }

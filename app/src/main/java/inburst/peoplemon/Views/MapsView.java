@@ -47,6 +47,7 @@ import inburst.peoplemon.Models.User;
 import inburst.peoplemon.Network.RestClient;
 import inburst.peoplemon.PeopleMon;
 import inburst.peoplemon.Stages.CaughtStage;
+import inburst.peoplemon.Stages.MessagesStage;
 import inburst.peoplemon.Stages.NearbyStage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,6 +78,9 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
 
     @Bind(R.id.caughtUsers)
     FloatingActionButton caughtUsers;
+
+    @Bind(R.id.mail_button)
+    FloatingActionButton checkMail;
 
 
 
@@ -109,7 +113,7 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
         UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
-        //mMap.setOnMyLocationChangeListener(myLocationChangeListener);
+        mMap.setOnMyLocationChangeListener(myLocationChangeListener);
         mMap.setOnMarkerClickListener(markerClick);
 
 
@@ -119,9 +123,6 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
             Toast.makeText(context, "Fail", Toast.LENGTH_SHORT).show();
         }
         mMap.clear();
-        LatLng sydney = new LatLng(-41, 23);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
 
     }
@@ -180,7 +181,8 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
                                 if (image != null) {
                                     mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(image)).position(new LatLng(user.getLatitude(), user.getLongitude())).title(user.getUserId()).snippet(user.getUserName()));
                                 } else {
-                                    mMap.addMarker(new MarkerOptions().position(new LatLng(user.getLatitude(), user.getLongitude())).title(user.getUserId()).snippet(user.getUserName()));
+                                    Bitmap bit = Utils.getRandomPokemon(context);
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(user.getLatitude(), user.getLongitude())).title(user.getUserId()).snippet(user.getUserName()).icon(BitmapDescriptorFactory.fromBitmap(bit)));
 
                                 }
                             }
@@ -201,6 +203,16 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
         Flow flow = PeopleMon.getMainFlow();
         History newHistory = flow.getHistory().buildUpon()
                 .push(new NearbyStage())
+                .build();
+        flow.setHistory(newHistory, Flow.Direction.FORWARD);
+
+    }
+
+    @OnClick(R.id.mail_button)
+    public void getMail(){
+        Flow flow = PeopleMon.getMainFlow();
+        History newHistory = flow.getHistory().buildUpon()
+                .push(new MessagesStage())
                 .build();
         flow.setHistory(newHistory, Flow.Direction.FORWARD);
 

@@ -2,39 +2,33 @@ package inburst.peoplemon.Stages;
 
 import android.app.Application;
 
-import com.davidstemmer.screenplay.stage.Stage;
-
 import inburst.budget.R;
 import inburst.peoplemon.PeopleMon;
 import inburst.peoplemon.Riggers.SlideRigger;
 
 /**
- * Created by lennyhicks on 11/9/16.
+ * Created by lennyhicks on 11/8/16.
  */
-public class EditProfileStage extends IndexedStage{
+
+public class MessagesListStage extends IndexedStage{
     public final SlideRigger rigger;
 
-    public EditProfileStage(Application context){
-        super(EditProfileStage.class.getName());
+    public MessagesListStage(Application context){
+        super(MessagesListStage.class.getName());
         this.rigger = new SlideRigger(context);
     }
 
-    public EditProfileStage(){
+    public MessagesListStage(){
         this(PeopleMon.getInstance());
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.edit_profile;
+        return R.layout.view_messages;
     }
 
     @Override
-    public Stage.Rigger getRigger() {
+    public Rigger getRigger() {
         return rigger;
-    }
-
-    @Override
-    public boolean isModal() {
-        return true;
     }
 }

@@ -8,11 +8,7 @@
                 android:gravity="center_horizontal"
                 android:background="@android:color/white"
                 android:layout_centerInParent="true"
-                android:id="@+id/editProfile"
-
-
-        >
-
+                android:id="@+id/editProfile">
 
         <EditText
             android:layout_width="300dp"
@@ -54,7 +50,7 @@
         android:layout_centerHorizontal="true"/>
 
     <Button
-        android:text="Button"
+        android:text="Cancel"
         android:layout_height="wrap_content"
         android:id="@+id/cancel"
 

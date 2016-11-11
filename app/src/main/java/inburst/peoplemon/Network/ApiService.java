@@ -49,10 +49,10 @@ public interface ApiService {
     Call<Messages[]> getConversations(@Query("pageSize") Integer pageSize, @Query("pageNumber") Integer pageNumber);
 
     @GET("/v1/User/Conversation")
-    Call<Messages[]> getConversations(@Query("id") Integer id, @Query("pageSize") Integer pageSize, @Query("pageNumber") Integer pageNumber);
+    Call<Messages> getMessages(@Query("id") Integer id, @Query("pageSize") Integer pageSize, @Query("pageNumber") Integer pageNumber);
 
     @POST("/v1/User/Conversation")//RecipientId, Message
-    Call<Messages> sendMessage(@Body Messages message);
+    Call<Void> sendMessage(@Body Messages message);
 
 
     //Auth

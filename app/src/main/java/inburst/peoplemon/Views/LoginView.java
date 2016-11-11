@@ -104,20 +104,19 @@ public class LoginView extends LinearLayout {
                         Log.i("RESPONSE", response.message());
                         Auth auth = response.body();
                         UserStore.getInstance().setToken("Bearer "+auth.getAccessToken());
-
+                        UserStore.getInstance().setAccount();
                         Flow flow = PeopleMon.getMainFlow();
-                        //flow.goBack();
                         History newHistory = History.single(new MapStage());
                         flow.setHistory(newHistory, Flow.Direction.REPLACE);
                     } else {
-                        Toast.makeText(context, "Failed Registering" + " : " + response.code(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Failed Signing in" + " : " + response.code(), Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Auth> call, Throwable t) {
                     Log.e("MyApp", "Caught error", t);
-                    Toast.makeText(context, "Having Difficulties Registering", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Having Difficulties Signing on", Toast.LENGTH_LONG).show();
                     //resetView();
                 }
             });

@@ -6,6 +6,7 @@ package inburst.peoplemon.Components;
 public final class Constants {
     public static final String token = "token";
     public static final String tokenExpiration = "tokenExpiration";
+    public static final String currentAccount = "account";
     public static String HEADER_VALUE;
     public static final String API_KEY = "iOSandroid301november2016";
     public static final Integer RADIUS_IN_METERS = 100;

@@ -38,6 +38,11 @@ public class User implements Comparable<User> {
     public User(String userId) {
     }
 
+    public User(String userId, String avatarBase64) {
+        this.userId = userId;
+        this.avatarBase64 = avatarBase64;
+    }
+
     public User(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;

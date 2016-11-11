@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         if (!flow.goBack()){
             flow.removeDispatcher(dispatcher);
             flow.setHistory(History.single(new PeopleMon()), Flow.Direction.BACKWARD);
-        } else {
+
             super.onBackPressed();
 
         }
@@ -92,10 +92,6 @@ public class MainActivity extends AppCompatActivity {
         Flow flow = PeopleMon.getMainFlow();
         switch (item.getItemId()) {
             case R.id.editProfile:
-//                History newHistory = flow.getHistory().buildUpon()
-//                        .push(new EditProfileStage())
-//                        .build();
-//                flow.setHistory(newHistory, Flow.Direction.FORWARD);
                 restClient.getApiService().getUserInfo().enqueue(new Callback<Account>() {
                     @Override
                     public void onResponse(Call<Account> call, Response<Account> response) {
@@ -180,9 +176,9 @@ public void getImage(){
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
-            ImageView imageView = (ImageView) findViewById(R.id.imageView);
             Bitmap image = decodeFile(picturePath);
             encodeTobase64(image);
+            ImageView imageView = (ImageView) findViewById(R.id.imageView);
 
             EventBus.getDefault().post(new ImageLoadedEvent());
             try {

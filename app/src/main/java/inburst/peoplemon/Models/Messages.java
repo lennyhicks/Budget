@@ -33,7 +33,7 @@ public class Messages {
     @SerializedName("SenderAvatarBase64")
     private String senderAvatarBase64;
     @SerializedName("Messages")
-    private ArrayList<Messages> messages;
+    private ArrayList<MessageView> messages;
     @SerializedName("Count")
     private Integer count;
     @SerializedName("Message")
@@ -54,11 +54,12 @@ public class Messages {
         this.senderAvatarBase64 = senderAvatarBase64;
     }
 
-    public Messages(Integer count, String recipientName, String senderName, ArrayList<Messages> messages) {
+    public Messages(Integer count, String recipientName, String senderName, ArrayList<MessageView> messages) {
         this.count = count;
         this.recipientName = recipientName;
-        this.messages = messages;
         this.senderName = senderName;
+        this.messages = messages;
+
     }
 
     public Messages(String recipientId, String message) {
@@ -68,4 +69,118 @@ public class Messages {
 
     public Messages() {
     }
+
+    public ArrayList<MessageView> getMessages() {
+        return messages;
+    }
+
+    public Integer getConversationId() {
+        return conversationId;
+    }
+
+    public void setConversationId(Integer conversationId) {
+        this.conversationId = conversationId;
+    }
+
+    public String getRecipientId() {
+        return recipientId;
+    }
+
+    public void setRecipientId(String recipientId) {
+        this.recipientId = recipientId;
+    }
+
+    public String getRecipientName() {
+        return recipientName;
+    }
+
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public Integer getMessageCount() {
+        return messageCount;
+    }
+
+    public void setMessageCount(Integer messageCount) {
+        this.messageCount = messageCount;
+    }
+
+    public String getAvatarBase64() {
+        return avatarBase64;
+    }
+
+    public void setAvatarBase64(String avatarBase64) {
+        this.avatarBase64 = avatarBase64;
+    }
+
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public String getRecipientAvatarBase64() {
+        return recipientAvatarBase64;
+    }
+
+    public void setRecipientAvatarBase64(String recipientAvatarBase64) {
+        this.recipientAvatarBase64 = recipientAvatarBase64;
+    }
+
+    public String getSenderAvatarBase64() {
+        return senderAvatarBase64;
+    }
+
+    public void setSenderAvatarBase64(String senderAvatarBase64) {
+        this.senderAvatarBase64 = senderAvatarBase64;
+    }
+
+    public void setMessages(ArrayList<MessageView> messages) {
+        this.messages = messages;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+
 }

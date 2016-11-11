@@ -1,7 +1,6 @@
 package inburst.peoplemon.Adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,78 +18,87 @@ import java.util.Date;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import inburst.budget.R;
+import inburst.peoplemon.Components.CurrentDataStore;
 import inburst.peoplemon.Components.Utils;
-import inburst.peoplemon.Dialogs.SendMessage;
+import inburst.peoplemon.Models.MessageView;
 import inburst.peoplemon.Models.User;
 
 /**
  * Created by lennyhicks on 11/8/16.
  */
 
-public class CaughtAdapter extends RecyclerView.Adapter<CaughtAdapter.Users> {
+public class MessageListViewAdapter extends RecyclerView.Adapter<MessageListViewAdapter.MessagesView> {
 
-    public ArrayList<User> user;
+    public static ArrayList<MessageView> messagesFromUser;
     private Context context;
 
-    public CaughtAdapter(ArrayList<User> user, Context context) {
-        this.user = user;
+
+    public MessageListViewAdapter(ArrayList<MessageView> user, Context context) {
+        this.messagesFromUser = user;
         this.context = context;
     }
 
     @Override
-    public void onBindViewHolder(Users holder, int position) {
-        final User caught = user.get(position);
+    public void onBindViewHolder(MessagesView holder, int position) {
+        final MessageView caught = messagesFromUser.get(position);
         holder.bindCategory(caught);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final SendMessage sendMessage = new SendMessage(context, caught);
-                sendMessage.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
 
-                    }
-                });
-                sendMessage.show();
             }
         });
     }
 
     @Override
-    public Users onCreateViewHolder(ViewGroup parent, int viewType) {
-        View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.caught_user, parent, false);
-        return new Users(inflatedView);
+    public MessagesView onCreateViewHolder(ViewGroup parent, int viewType) {
+        View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_message, parent, false);
+        return new MessagesView(inflatedView);
     }
 
     @Override
     public int getItemCount() {
-        return user.size();
+        return messagesFromUser.size();
     }
 
-    class Users extends RecyclerView.ViewHolder {
+    class MessagesView extends RecyclerView.ViewHolder {
         @Bind(R.id.imageView)
         ImageView imageView;
 
-        @Bind(R.id.nameField)
-        TextView nameField;
+        @Bind(R.id.messageField)
+        TextView messageField;
 
         @Bind(R.id.otherField)
         TextView dateField;
 
-        public Users(View itemView) {
+        Bitmap imageHolder = Utils.getRandomPokemon(context);
+        Bitmap imageHolder2 = Utils.getRandomPokemon(context);
+
+        public MessagesView(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bindCategory(User user) {
-            nameField.setText(user.getUserName());
+        public void bindCategory(MessageView message) {
+            User user;
+            messageField.setText(message.getMessage());
+            if(message.getSenderUserId() == CurrentDataStore.sender.getUserId()){
+                user = CurrentDataStore.recipient;
+            } else {
+                user = CurrentDataStore.sender;
+            }
             Bitmap image = Utils.decodeImage(user.getAvatarBase64());
             if (image == null) {
-                imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_launcher));
+                if(user == CurrentDataStore.sender) {
+                    imageView.setImageBitmap(imageHolder);
+                } else {
+                    imageView.setImageBitmap(imageHolder2);
+
+                }
             } else {
                 imageView.setImageBitmap(image);
             }
-            String strCurrentDate = user.getCreated();
+            String strCurrentDate = message.getCreated();
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ");
             try {
                 Date newDate = format.parse(strCurrentDate);
