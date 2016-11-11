@@ -163,7 +163,8 @@ public class MapsView extends RelativeLayout implements OnMapReadyCallback,
         public void onMyLocationChange(final Location location) {
             checkIn(location);
             circleMaker(location, ValueAnimator.INFINITE);
-
+            LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 18));
             restClient.getApiService().findNearby(RADIUS_IN_METERS).enqueue(new Callback<User[]>() {
                 @Override
                 public void onResponse(Call<User[]> call, Response<User[]> response) {

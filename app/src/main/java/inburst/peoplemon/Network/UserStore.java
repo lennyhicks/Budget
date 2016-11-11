@@ -75,6 +75,9 @@ public class UserStore {
 
     public String getAccount(){
         String currAccount = sharedPrefs.getString(currentAccount, null);
+        if (currAccount == null){
+            setAccount();
+        }
         return currAccount;
     }
 }

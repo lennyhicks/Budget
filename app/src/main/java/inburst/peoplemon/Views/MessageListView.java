@@ -16,7 +16,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import inburst.budget.R;
 import inburst.peoplemon.Adapters.MessageListViewAdapter;
-import inburst.peoplemon.Components.CurrentDataStore;
 import inburst.peoplemon.Models.MessageView;
 import inburst.peoplemon.Models.Messages;
 import inburst.peoplemon.Network.RestClient;
@@ -39,9 +38,11 @@ public class MessageListView extends LinearLayout {
     @Bind(R.id.sendButton)
     Button sendButton;
 
+    private Integer converId;
     private Context context;
     private MessageListViewAdapter messages;
     private ArrayList<MessageView> messageViews;
+    private Messages mess;
 
     public MessageListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -52,29 +53,55 @@ public class MessageListView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        messageViews = CurrentDataStore.messageView;
-        messages = new MessageListViewAdapter(messageViews, context);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(messages);
 
+    }
+
+    public void getUsers(Integer converId){
+
+        this.converId = converId;
+
+        RestClient restClient = new RestClient();
+
+        restClient.getApiService().getMessages(converId, 1000, 0).enqueue(new Callback<Messages>() {
+            @Override
+            public void onResponse(Call<Messages> call, Response<Messages> response) {
+                mess = response.body();
+
+                messageViews = mess.getMessages();
+
+                messages = new MessageListViewAdapter(messageViews, context);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                recyclerView.setAdapter(messages);
+                recyclerView.scrollToPosition(messageViews.size() - 1);
+
+            }
+
+            @Override
+            public void onFailure(Call<Messages> call, Throwable t) {
+
+            }
+        });
     }
 
     @OnClick(R.id.sendButton)
     public void sendMessage(){
-        String user;
         String message = messageField.getText().toString();
-        RestClient restClient = new RestClient();
-        if(UserStore.getInstance().getAccount() == CurrentDataStore.currentMessage.getSenderId())
-            user = CurrentDataStore.currentMessage.getRecipientId();
-        else {
-            user = CurrentDataStore.currentMessage.getSenderId();
+        String user;
+        if(!UserStore.getInstance().getAccount().equals(mess.getSenderId())) {
+            user = messageViews.get(0).getRecipentUserId();
         }
+        else {
+            user = messageViews.get(0).getSenderUserId();
+        }
+
         Messages newMessage = new Messages(user, message);
+        RestClient restClient = new RestClient();
         restClient.getApiService().sendMessage(newMessage).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(context, "Message Sent", Toast.LENGTH_SHORT).show();
+                getUsers(converId);
+                Toast.makeText(context, "Message Sent to " + mess.getRecipientName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override

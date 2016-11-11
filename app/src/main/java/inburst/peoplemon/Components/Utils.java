@@ -30,7 +30,7 @@ public class Utils {
                 String[] haxor = encodedString.split(",");
                 decodedString = Base64.decode(haxor[1], Base64.DEFAULT);
             } else {
-                if (encodedString.length() > 200) {
+                if (encodedString.length() > 2000) {
                     decodedString = Base64.decode(encodedString, Base64.DEFAULT);
                 } else {
                     decodedString = null;
@@ -55,8 +55,12 @@ public class Utils {
     }
 
     public static Bitmap resize(Bitmap image) {
-        image = Bitmap.createScaledBitmap(image, 120, 120, false);
-        return image;
+        try {
+            image = Bitmap.createScaledBitmap(image, 120, 120, false);
+            return image;
+        } catch (NullPointerException e){
+            return null;
+        }
     }
 
     public static Bitmap getRandomPokemon(Context context){

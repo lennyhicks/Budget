@@ -18,10 +18,9 @@ import java.util.Date;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import inburst.budget.R;
-import inburst.peoplemon.Components.CurrentDataStore;
+import inburst.peoplemon.Components.Constants;
 import inburst.peoplemon.Components.Utils;
 import inburst.peoplemon.Models.MessageView;
-import inburst.peoplemon.Models.User;
 
 /**
  * Created by lennyhicks on 11/8/16.
@@ -29,7 +28,7 @@ import inburst.peoplemon.Models.User;
 
 public class MessageListViewAdapter extends RecyclerView.Adapter<MessageListViewAdapter.MessagesView> {
 
-    public static ArrayList<MessageView> messagesFromUser;
+    public static ArrayList<MessageView> messagesFromUser = new ArrayList<>();
     private Context context;
 
 
@@ -80,24 +79,24 @@ public class MessageListViewAdapter extends RecyclerView.Adapter<MessageListView
         }
 
         public void bindCategory(MessageView message) {
-            User user;
+            String user;
             messageField.setText(message.getMessage());
-            if(message.getSenderUserId() == CurrentDataStore.sender.getUserId()){
-                user = CurrentDataStore.recipient;
+            if(message.getSenderUserId() == Constants.currentAccount){
+                user = message.getRecipentUserId();
             } else {
-                user = CurrentDataStore.sender;
+                user = message.getSenderUserId();
             }
-            Bitmap image = Utils.decodeImage(user.getAvatarBase64());
-            if (image == null) {
-                if(user == CurrentDataStore.sender) {
-                    imageView.setImageBitmap(imageHolder);
-                } else {
-                    imageView.setImageBitmap(imageHolder2);
-
-                }
-            } else {
-                imageView.setImageBitmap(image);
-            }
+//            Bitmap image = Utils.decodeImage(user.getAvatarBase64());
+//            if (image == null) {
+//                if(user == CurrentDataStore.sender) {
+//                    imageView.setImageBitmap(imageHolder);
+//                } else {
+//                    imageView.setImageBitmap(imageHolder2);
+//
+//                }
+//            } else {
+//                imageView.setImageBitmap(image);
+//            }
             String strCurrentDate = message.getCreated();
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ");
             try {
